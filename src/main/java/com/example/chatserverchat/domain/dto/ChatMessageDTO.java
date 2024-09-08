@@ -1,5 +1,6 @@
 package com.example.chatserverchat.domain.dto;
 
+import com.example.chatserverchat.domain.entity.ChatMessage;
 import com.example.chatserverchat.domain.entity.ChatMessageType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,13 +19,13 @@ public class ChatMessageDTO {
     private String message;
     private String createdAt;
 
-//    public ChatMessageDTO(ChatMessage message) {
-//        this.chatId = message.getChatId();
-//        this.type = message.getType();
-//        this.username = message.getUsername();
-//        this.message = message.getMessage();
-//        this.createdAt = message.getCreatedAt();
-//    }
+    public ChatMessageDTO(ChatMessage message) {
+        this.chatId = message.getChatId();
+        this.type = message.getType();
+        this.username = message.getUsername();
+        this.message = message.getMessage();
+        this.createdAt = message.getCreatedAt();
+    }
 
     @Getter
     @NoArgsConstructor
