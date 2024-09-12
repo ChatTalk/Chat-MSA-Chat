@@ -12,5 +12,6 @@ public final class Constants {
 
     // kafka 상수
     public static final String KAFKA_USER_TO_CHAT_TOPIC = "email";  // chat 인스턴스에 전파하기 위한 토픽
+    public static final String KAFKA_USER_DATA_KEY = "username"; // 동시성 해시 맵의 key 값
     public static final String KAFKA_USER_TO_CHAT_GROUP_ID = "dev";
 }
