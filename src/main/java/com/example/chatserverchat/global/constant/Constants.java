@@ -8,6 +8,7 @@ public final class Constants {
     public static final String REDIS_CHAT_PREFIX = "chat_";
     public static final String COOKIE_AUTH_HEADER = "Authorization";
     public static final String REDIS_REFRESH_KEY = "REFRESH_TOKEN:";
+    public static final String REDIS_ACCESS_KEY = "ACCESS_TOKEN:";
     public static final String REDIS_SUBSCRIBE_KEY = "SUBSCRIBE:";
     public static final String BEARER_PREFIX = "Bearer ";
 
