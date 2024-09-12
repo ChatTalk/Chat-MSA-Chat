@@ -28,17 +28,19 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         String beforeToken = findAccessToken(request.getCookies());
         log.info("초기 토큰값: {}", beforeToken);
 
+        if (beforeToken == null) {
+            throw new IllegalArgumentException("토큰 조회 불능. 중간 과정에서 소실 가능성 있음.");
+        }
+
         /**
          * 여기서 바로 카프카로 전송해야 되는 걸까?
          */
-
-        if (beforeToken != null) {
-            kafkaTemplate.send(KAFKA_OTHER_TO_USER_TOPIC, beforeToken);
-        } else {
-            throw new IllegalArgumentException("엑세스 토큰이 존재하지 않음");
-        }
+        kafkaTemplate.send(KAFKA_OTHER_TO_USER_TOPIC, beforeToken);
 
         // 향후 로직... 인증 정보 받아오기...
+        // 락 걸어서 대기타다가....
+        // 조회되는지 확인하기
+
 
     }
 
