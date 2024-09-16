@@ -1,35 +1,22 @@
 package com.example.chatserverchat.global.config;
 
 import com.example.chatserverchat.global.security.AuthenticationFilter;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final RedisTemplate<String, String> cacheTemplate;
-
-    public WebSecurityConfig(
-            UserDetailsService userDetailsService,
-            KafkaTemplate<String, String> kafkaTemplate,
-            @Qualifier("cacheTemplate") RedisTemplate<String, String> cacheTemplate) {
-        this.userDetailsService = userDetailsService;
-        this.kafkaTemplate = kafkaTemplate;
-        this.cacheTemplate = cacheTemplate;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,9 +37,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(new AuthenticationFilter(
-                userDetailsService, kafkaTemplate, cacheTemplate
-        ), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(new AuthenticationFilter(userDetailsService));
 
         return http.build();
     }
