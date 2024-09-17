@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class OpenChatDTO {
+public class ChatRoomDTO {
     private String title;
     private Integer maxPersonnel;
 
