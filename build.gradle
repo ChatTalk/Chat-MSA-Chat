@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.projectlombok:lombok'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -38,6 +38,9 @@ dependencies {
 
     // WebSocket Security
     implementation 'org.springframework.security:spring-security-messaging:6.3.1'
+
+    // redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.28.0'
 }
 
 dependencyManagement {

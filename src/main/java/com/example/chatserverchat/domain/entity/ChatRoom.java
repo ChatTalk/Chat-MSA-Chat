@@ -1,6 +1,6 @@
 package com.example.chatserverchat.domain.entity;
 
-import com.example.chatserverchat.domain.dto.OpenChatDTO;
+import com.example.chatserverchat.domain.dto.ChatRoomDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "openchats")
 @EntityListeners(AuditingEntityListener.class)
-public class OpenChat {
+public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class OpenChat {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    public OpenChat(OpenChatDTO dto, String openUsername) {
+    public ChatRoom(ChatRoomDTO dto, String openUsername) {
         this.title = dto.getTitle();
         this.openUsername = openUsername;
         this.maxPersonnel = dto.getMaxPersonnel();

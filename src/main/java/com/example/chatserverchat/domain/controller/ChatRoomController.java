@@ -1,7 +1,7 @@
 package com.example.chatserverchat.domain.controller;
 
-import com.example.chatserverchat.domain.dto.OpenChatDTO;
-import com.example.chatserverchat.domain.service.OpenChatService;
+import com.example.chatserverchat.domain.dto.ChatRoomDTO;
+import com.example.chatserverchat.domain.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +15,19 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/open-chats")
-public class OpenChatController {
+public class ChatRoomController {
 
-    private final OpenChatService openChatService;
+    private final ChatRoomService chatRoomService;
 
     @PostMapping("/create")
-    public ResponseEntity<OpenChatDTO.Info> createOpenChat(@RequestBody OpenChatDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
-        OpenChatDTO.Info chatInfo = openChatService.createOpenChat(dto, userDetails.getUsername());
+    public ResponseEntity<ChatRoomDTO.Info> createOpenChat(@RequestBody ChatRoomDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
+        ChatRoomDTO.Info chatInfo = chatRoomService.createOpenChat(dto, userDetails.getUsername());
         return ResponseEntity.ok(chatInfo);
     }
 
     @GetMapping()
-    public ResponseEntity<List<OpenChatDTO.Info>> getAllOpenChats() {
-        List<OpenChatDTO.Info> chats = openChatService.getAllOpenChats();
+    public ResponseEntity<List<ChatRoomDTO.Info>> getAllOpenChats() {
+        List<ChatRoomDTO.Info> chats = chatRoomService.getAllOpenChats();
         return ResponseEntity.ok(chats);
     }
 }
