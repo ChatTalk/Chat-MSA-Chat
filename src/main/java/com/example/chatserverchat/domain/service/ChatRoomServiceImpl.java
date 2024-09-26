@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.chatserverchat.global.constant.Constants.REDIS_SUBSCRIBE_KEY;
+import static com.example.chatserverchat.global.constant.Constants.REDIS_MAX_PERSONNEL_KEY;
 
 @Service
 @Transactional
@@ -26,7 +26,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoomMapper.toEntity(chatRoomDTO, openUsername));
         // 채팅방 최대 인원 저장
         maxPersonnelRedisTemplate.opsForSet()
-                .add(REDIS_SUBSCRIBE_KEY + chatRoom.getId(), chatRoom.getMaxPersonnel().toString());
+                .add(REDIS_MAX_PERSONNEL_KEY + chatRoom.getId(), chatRoom.getMaxPersonnel().toString());
 
         return ChatRoomMapper.toDTO(chatRoom, chatRoom.getOpenUsername());
     }
