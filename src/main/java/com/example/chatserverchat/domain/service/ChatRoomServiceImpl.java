@@ -19,14 +19,14 @@ import static com.example.chatserverchat.global.constant.Constants.REDIS_MAX_PER
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final RedisTemplate<String, String> maxPersonnelRedisTemplate;
+    private final RedisTemplate<String, Integer> maxPersonnelTemplate;
 
     @Override
     public ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername) {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoomMapper.toEntity(chatRoomDTO, openUsername));
         // 채팅방 최대 인원 저장
-        maxPersonnelRedisTemplate.opsForSet()
-                .add(REDIS_MAX_PERSONNEL_KEY + chatRoom.getId(), chatRoom.getMaxPersonnel().toString());
+        maxPersonnelTemplate.opsForSet()
+                .add(REDIS_MAX_PERSONNEL_KEY + chatRoom.getId(), chatRoom.getMaxPersonnel());
 
         return ChatRoomMapper.toDTO(chatRoom, chatRoom.getOpenUsername());
     }
