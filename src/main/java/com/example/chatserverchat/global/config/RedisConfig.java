@@ -58,4 +58,23 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+    // 채팅창의 접속자 인원 관리
+    @Bean(name = "participatedTemplate")
+    public RedisTemplate<String, String> participatedTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return getStringStringRedisTemplate(redisConnectionFactory);
+    }
+
+    private RedisTemplate<String, String> getStringStringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
+
+        return redisTemplate;
+    }
 }

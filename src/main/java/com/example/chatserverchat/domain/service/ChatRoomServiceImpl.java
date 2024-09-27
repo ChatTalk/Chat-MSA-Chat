@@ -9,9 +9,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.example.chatserverchat.global.constant.Constants.REDIS_MAX_PERSONNEL_KEY;
+import static com.example.chatserverchat.global.constant.Constants.REDIS_PARTICIPATED_KEY;
 
 @Service
 @Transactional
@@ -20,6 +22,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final RedisTemplate<String, Integer> maxPersonnelTemplate;
+    private final RedisTemplate<String, String> participatedTemplate;
 
     @Override
     public ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername) {
@@ -27,6 +30,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 채팅방 최대 인원 저장
         maxPersonnelTemplate.opsForSet()
                 .add(REDIS_MAX_PERSONNEL_KEY + chatRoom.getId(), chatRoom.getMaxPersonnel());
+        // 빈 리스트 할당
+        participatedTemplate.opsForList()
+                .rightPushAll(REDIS_PARTICIPATED_KEY + chatRoom.getId(), Collections.emptyList());
 
         return ChatRoomMapper.toDTO(chatRoom, chatRoom.getOpenUsername());
     }
