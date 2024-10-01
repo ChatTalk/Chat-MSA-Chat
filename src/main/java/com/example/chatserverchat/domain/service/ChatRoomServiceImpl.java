@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 
-import static com.example.chatserverchat.global.constant.Constants.REDIS_MAX_PERSONNEL_KEY;
-import static com.example.chatserverchat.global.constant.Constants.REDIS_PARTICIPATED_KEY;
+import static com.example.chatserverchat.global.constant.Constants.*;
 
 @Service
 @Transactional
@@ -22,6 +21,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final RedisTemplate<String, Integer> maxPersonnelTemplate;
+    private final RedisTemplate<String, String> subscribeTemplate;
 
     @Override
     public ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername) {
@@ -45,6 +45,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public List<ChatRoomDTO.Info> getSubscribedChatRooms(String email) {
-        return List.of();
+        List<String> subscribedChatIds =
+                subscribeTemplate.opsForList().range(REDIS_SUBSCRIBE_KEY + email, 0, -1);
+
+        if (subscribedChatIds == null || subscribedChatIds.isEmpty()) {
+            subscribedChatIds = Collections.emptyList();
+        }
+
+        return chatRoomRepository.findAllById(subscribedChatIds.stream().map(Long::parseLong).toList())
+                .stream().map(e -> ChatRoomMapper.toDTO(e, e.getOpenUsername())).toList();
     }
 }

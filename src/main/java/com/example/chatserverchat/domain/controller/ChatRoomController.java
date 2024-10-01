@@ -32,5 +32,8 @@ public class ChatRoomController {
     }
 
     @GetMapping("/subscribe")
-    public ResponseEntity<List<ChatRoomDTO.Info>> subscribe(@AuthenticationPrincipal UserDetails userDetails) {}
+    public ResponseEntity<List<ChatRoomDTO.Info>> subscribe(@AuthenticationPrincipal UserDetails userDetails) {
+        List<ChatRoomDTO.Info> subscribedChats = chatRoomService.getSubscribedChatRooms(userDetails.getUsername());
+        return ResponseEntity.ok(subscribedChats);
+    }
 }
