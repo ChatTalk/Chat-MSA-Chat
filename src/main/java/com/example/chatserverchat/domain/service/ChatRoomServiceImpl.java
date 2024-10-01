@@ -5,15 +5,19 @@ import com.example.chatserverchat.domain.entity.ChatRoom;
 import com.example.chatserverchat.domain.mapper.ChatRoomMapper;
 import com.example.chatserverchat.domain.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.chatserverchat.global.constant.Constants.*;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -45,11 +49,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public List<ChatRoomDTO.Info> getSubscribedChatRooms(String email) {
-        List<String> subscribedChatIds =
-                subscribeTemplate.opsForList().range(REDIS_SUBSCRIBE_KEY + email, 0, -1);
+        Set<String> subscribedChatIdsSet =
+                subscribeTemplate.opsForSet().members(REDIS_SUBSCRIBE_KEY + email);
 
-        if (subscribedChatIds == null || subscribedChatIds.isEmpty()) {
+        List<String> subscribedChatIds;
+        if (subscribedChatIdsSet == null || subscribedChatIdsSet.isEmpty()) {
             subscribedChatIds = Collections.emptyList();
+        } else {
+            subscribedChatIds = new ArrayList<>(subscribedChatIdsSet);
         }
 
         return chatRoomRepository.findAllById(subscribedChatIds.stream().map(Long::parseLong).toList())
