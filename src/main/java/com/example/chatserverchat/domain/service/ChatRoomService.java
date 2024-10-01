@@ -9,4 +9,6 @@ public interface ChatRoomService {
     ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername);
 
     List<ChatRoomDTO.Info> getAllOpenChats();
+
+    List<ChatRoomDTO.Info> getSubscribedChatRooms(String email);
 }

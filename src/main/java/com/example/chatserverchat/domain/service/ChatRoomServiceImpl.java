@@ -42,4 +42,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return chatRoomRepository.findAll().stream()
                 .map(e -> ChatRoomMapper.toDTO(e, e.getOpenUsername())).toList();
     }
+
+    @Override
+    public List<ChatRoomDTO.Info> getSubscribedChatRooms(String email) {
+        return List.of();
+    }
 }
