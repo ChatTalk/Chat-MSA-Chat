@@ -65,6 +65,12 @@ public class RedisConfig {
         return getStringStringRedisTemplate(redisConnectionFactory);
     }
 
+    // 회원이 지급 '읽고'있는 채팅방 확인용
+    @Bean(name = "readTemplate")
+    public RedisTemplate<String, String> readTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return getStringStringRedisTemplate(redisConnectionFactory);
+    }
+
     // 회원이 지금 구독하고 있는 채팅방 확인용(set 구조화)
     @Bean(name = "subscribeTemplate")
     public RedisTemplate<String, String> subscribeTemplate(RedisConnectionFactory redisConnectionFactory) {
