@@ -18,7 +18,7 @@ import static com.example.chatserverchat.global.constant.Constants.REDIS_PARTICI
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/message")
+@RequestMapping("/api/open-chats/read")
 public class ChatReadController {
 
     private final ChatReadService chatReadService;
