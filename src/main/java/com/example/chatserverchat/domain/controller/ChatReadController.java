@@ -18,14 +18,14 @@ import static com.example.chatserverchat.global.constant.Constants.REDIS_PARTICI
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/open-chats/read")
+@RequestMapping("/api/open-chats")
 public class ChatReadController {
 
     private final ChatReadService chatReadService;
     private final RedisTemplate<String, String> readTemplate;
     private final RedisTemplate<String, Boolean> participatedTemplate;
 
-    @GetMapping("/{chatId}")
+    @GetMapping("/read/{chatId}")
     public ResponseEntity<List<ChatMessageDTO>> getChatMessages(
             @PathVariable Long chatId, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("안 읽은 메세지 갖고 오기");
@@ -36,7 +36,7 @@ public class ChatReadController {
     }
 
     // 메뉴 돌아가기 버트 눌렀을 때
-    @PutMapping("/{chatId}")
+    @PutMapping("/read/{chatId}")
     public void unread(
             @PathVariable Long chatId, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("돌아가기 누름");

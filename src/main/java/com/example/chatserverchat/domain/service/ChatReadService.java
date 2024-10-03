@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ChatReadService {
     List<ChatMessageDTO> getUnreadMessages(String username, String chatId);
+
+
 }

@@ -1,8 +1,11 @@
 package com.example.chatserverchat.domain.service;
 
+import com.example.chatserverchat.domain.document.UserSubscription;
 import com.example.chatserverchat.domain.dto.ChatRoomDTO;
+import com.example.chatserverchat.domain.dto.ChatSubscriptionDTO;
 import com.example.chatserverchat.domain.entity.ChatRoom;
 import com.example.chatserverchat.domain.mapper.ChatRoomMapper;
+import com.example.chatserverchat.domain.repository.ChatReadRepository;
 import com.example.chatserverchat.domain.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +27,9 @@ import static com.example.chatserverchat.global.constant.Constants.*;
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatReadRepository chatReadRepository;
     private final RedisTemplate<String, Integer> maxPersonnelTemplate;
-    private final RedisTemplate<String, String> subscribeTemplate;
+//    private final RedisTemplate<String, String> subscribeTemplate;
 
     @Override
     public ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername) {
@@ -49,17 +53,26 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public List<ChatRoomDTO.Info> getSubscribedChatRooms(String email) {
-        Set<String> subscribedChatIdsSet =
-                subscribeTemplate.opsForSet().members(REDIS_SUBSCRIBE_KEY + email);
+//        Set<String> subscribedChatIdsSet =
+//                subscribeTemplate.opsForSet().members(REDIS_SUBSCRIBE_KEY + email);
 
-        List<String> subscribedChatIds;
-        if (subscribedChatIdsSet == null || subscribedChatIdsSet.isEmpty()) {
-            subscribedChatIds = Collections.emptyList();
-        } else {
-            subscribedChatIds = new ArrayList<>(subscribedChatIdsSet);
-        }
+        UserSubscription userSubscription =
+                chatReadRepository
+                        .findByUsername(email)
+                        .orElseThrow(() -> new IllegalArgumentException("mongoDB에 email 없음"));
 
-        return chatRoomRepository.findAllById(subscribedChatIds.stream().map(Long::parseLong).toList())
+        List<String> subscribeChatIds =
+                userSubscription.getSubscribedChats()
+                        .stream().map(ChatSubscriptionDTO::getChatId).toList();
+//
+//        List<String> subscribedChatIds;
+//        if (subscribedChatIdsSet == null || subscribedChatIdsSet.isEmpty()) {
+//            subscribedChatIds = Collections.emptyList();
+//        } else {
+//            subscribedChatIds = new ArrayList<>(subscribedChatIdsSet);
+//        }
+
+        return chatRoomRepository.findAllById(subscribeChatIds.stream().map(Long::parseLong).toList())
                 .stream().map(e -> ChatRoomMapper.toDTO(e, e.getOpenUsername())).toList();
     }
 }

@@ -59,22 +59,22 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    // 채팅창의 접속자 인원 관리
-    @Bean(name = "participatedTemplate")
-    public RedisTemplate<String, String> participatedTemplate(RedisConnectionFactory redisConnectionFactory) {
-        return getStringStringRedisTemplate(redisConnectionFactory);
-    }
-
     // 회원이 지급 '읽고'있는 채팅방 확인용
     @Bean(name = "readTemplate")
     public RedisTemplate<String, String> readTemplate(RedisConnectionFactory redisConnectionFactory) {
         return getStringStringRedisTemplate(redisConnectionFactory);
     }
 
-    // 회원이 지금 구독하고 있는 채팅방 확인용(set 구조화)
-    @Bean(name = "subscribeTemplate")
-    public RedisTemplate<String, String> subscribeTemplate(RedisConnectionFactory redisConnectionFactory) {
-        return getStringStringRedisTemplate(redisConnectionFactory);
+//    // 회원이 지금 구독하고 있는 채팅방 확인용(set 구조화)
+//    @Bean(name = "subscribeTemplate")
+//    public RedisTemplate<String, String> subscribeTemplate(RedisConnectionFactory redisConnectionFactory) {
+//        return getStringStringRedisTemplate(redisConnectionFactory);
+//    }
+
+    // 채팅창의 접속자 인원 관리
+    @Bean(name = "participatedTemplate")
+    public RedisTemplate<String, Boolean> participatedTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return getStringBooleanTemplate(redisConnectionFactory);
     }
 
     private RedisTemplate<String, String> getStringStringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -86,6 +86,22 @@ public class RedisConfig {
 
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new StringRedisSerializer());
+
+        return redisTemplate;
+    }
+
+    private RedisTemplate<String, Boolean> getStringBooleanTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Boolean> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+        // 키와 해시 키는 String으로 설정
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+
+        // 해시 값은 Boolean으로 설정
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Boolean.class));
+        // 값을 Boolean으로 설정
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Boolean.class));
 
         return redisTemplate;
     }
