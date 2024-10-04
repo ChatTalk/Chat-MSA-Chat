@@ -38,6 +38,9 @@ public class RedisPublishService {
                 .toList();
 
         // redis 송신
+        // 메뉴로 돌아가는 시점에도 결국 구독 종료니까
+        // 채팅창으로 다시 들어와야 구독 시작
+        // 그냥 구독하게 놔두는 게 좋을 것 같기도?
         String userReadListString = objectMapper.writeValueAsString(userReadList);
         pubSubTemplate.convertAndSend(REDIS_CHAT_PREFIX + chatId.toString(), userReadListString);
     }
