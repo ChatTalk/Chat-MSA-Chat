@@ -1,0 +1,11 @@
+type ChatRoom {
+    id: ID!
+    title: String!
+    openUsername: String!
+    maxPersonnel: Int!
+    createdAt: String!
+}
+
+type Query {
+    getChatRoomById(id: ID!): ChatRoom
+}
