@@ -14,7 +14,7 @@ public class ChatParticipantServiceImpl implements ChatParticipantService {
     private final ChatParticipantRepository chatParticipantRepository;
 
     @Override
-    public void createChatParticipant(Long chatId) {
-        chatParticipantRepository.save(new ChatParticipant(chatId.toString()));
+    public void createChatParticipant(String chatId) {
+        chatParticipantRepository.save(new ChatParticipant(chatId));
     }
 }
