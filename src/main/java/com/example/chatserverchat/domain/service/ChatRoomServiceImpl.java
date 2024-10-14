@@ -28,19 +28,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatReadRepository chatReadRepository;
-    private final RedisTemplate<String, Integer> maxPersonnelTemplate;
 //    private final RedisTemplate<String, String> subscribeTemplate;
 
     @Override
     public ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername) {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoomMapper.toEntity(chatRoomDTO, openUsername));
-        // 채팅방 최대 인원 저장
-        maxPersonnelTemplate.opsForValue()
-                .set(REDIS_MAX_PERSONNEL_KEY + chatRoom.getId(), chatRoom.getMaxPersonnel());
-        // 빈 리스트 할당(이 아니라 어차피 생성자가 거기 참여하겠다는 의도니까)
-//        participatedTemplate.opsForList()
-//                .rightPush(REDIS_PARTICIPATED_KEY + chatRoom.getId(), openUsername);
-
         return ChatRoomMapper.toDTO(chatRoom, chatRoom.getOpenUsername());
     }
 
