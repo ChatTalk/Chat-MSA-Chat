@@ -10,5 +10,5 @@ public interface ChatRoomService {
 
     List<ChatRoomDTO.Info> getAllOpenChats();
 
-    List<ChatRoomDTO.Info> getSubscribedChatRooms(String email);
+    List<ChatRoomDTO.Info> getSubscribedChatRooms(String email, String role);
 }
