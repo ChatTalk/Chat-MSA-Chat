@@ -1,26 +1,17 @@
 package com.example.chatserverchat.domain.controller;
 
 import com.example.chatserverchat.domain.dto.ChatMessageDTO;
-//import com.example.chatserverchat.domain.dto.UserReadDTO;
+import com.example.chatserverchat.domain.service.ChatParticipantService;
 import com.example.chatserverchat.domain.service.ChatReadService;
-import com.example.chatserverchat.domain.service.RedisPublishService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.example.chatserverchat.global.constant.Constants.REDIS_CHAT_READ_KEY;
-import static com.example.chatserverchat.global.constant.Constants.REDIS_PARTICIPATED_KEY;
 
 @Slf4j
 @RestController
@@ -29,7 +20,7 @@ import static com.example.chatserverchat.global.constant.Constants.REDIS_PARTICI
 public class ChatReadController {
 
     private final ChatReadService chatReadService;
-    private final RedisPublishService redisPublishService;
+    private final ChatParticipantService chatParticipantService;
 
     @GetMapping("/read/{chatId}")
     public ResponseEntity<List<ChatMessageDTO>> getChatMessages(
@@ -46,6 +37,6 @@ public class ChatReadController {
     public void unParticipate(
             @PathVariable Long chatId, @AuthenticationPrincipal UserDetails userDetails) throws JsonProcessingException {
         log.info("돌아가기 누름");
-        redisPublishService.updateRedisParticipatedHash(chatId, userDetails.getUsername());
+        chatParticipantService.exitChatParticipant(chatId.toString(), userDetails.getUsername());
     }
 }
