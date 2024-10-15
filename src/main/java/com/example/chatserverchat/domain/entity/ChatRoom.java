@@ -45,4 +45,12 @@ public class ChatRoom {
         this.personnel = 0;
         this.maxPersonnel = dto.getMaxPersonnel();
     }
+
+    public void increasePersonnel() {
+        this.personnel++;
+    }
+
+    public void decreasePersonnel() {
+        this.personnel--;
+    }
 }

@@ -10,3 +10,7 @@ type ChatRoom {
 type Query {
     getChatRoomById(id: ID!): ChatRoom
 }
+
+type Mutation {
+    incrementPersonnel(id: ID!): ChatRoom
+}

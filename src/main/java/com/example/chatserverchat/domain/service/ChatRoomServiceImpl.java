@@ -3,7 +3,6 @@ package com.example.chatserverchat.domain.service;
 import com.example.chatserverchat.domain.dto.ChatRoomDTO;
 import com.example.chatserverchat.domain.entity.ChatRoom;
 import com.example.chatserverchat.domain.mapper.ChatRoomMapper;
-import com.example.chatserverchat.domain.repository.ChatReadRepository;
 import com.example.chatserverchat.domain.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import java.util.List;
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final GraphqlService graphqlService;
+    private final GraphqlClientService graphqlClientService;
 
     @Override
     public ChatRoomDTO.Info createOpenChat(ChatRoomDTO chatRoomDTO, String openUsername) {
@@ -37,7 +36,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public List<ChatRoomDTO.Info> getSubscribedChatRooms(String email, String role) {
 
-        List<Long> chatIdList = graphqlService.getChatRoomById(email, role)
+        List<Long> chatIdList = graphqlClientService.getChatRoomById(email, role)
                 .stream().map(e -> Long.parseLong(e.chatId())).toList();
 
         return chatRoomRepository.findByIdIn(chatIdList).stream()

@@ -11,7 +11,7 @@ import java.util.List;
 @Slf4j(topic = "GRAPHQL_SERVICE")
 @Service
 @RequiredArgsConstructor
-public class GraphqlService {
+public class GraphqlClientService {
 
     private final WebGraphQlClient webGraphQlClient;
 
