@@ -38,8 +38,6 @@ public class ChatGraphqlServiceImpl implements ChatGraphqlService {
 
     @Override
     public GraphqlDTO incrementPersonnel(String id) throws HttpResponseException {
-        log.info("여긴 들어오나?(채팅방 아이디: {})", id);
-
         ChatRoom chatRoom =
                 chatRoomRepository.findById(Long.parseLong(id)).orElseThrow(null);
 
@@ -55,6 +53,27 @@ public class ChatGraphqlServiceImpl implements ChatGraphqlService {
         }
 
         chatRoom.increasePersonnel();
+
+        return new GraphqlDTO(
+                chatRoom.getId().toString(),
+                chatRoom.getTitle(),
+                chatRoom.getOpenUsername(),
+                chatRoom.getPersonnel(),
+                chatRoom.getMaxPersonnel(),
+                chatRoom.getCreatedAt().toString()
+        );
+    }
+
+    @Override
+    public GraphqlDTO decrementPersonnel(String id) {
+        ChatRoom chatRoom =
+                chatRoomRepository.findById(Long.parseLong(id)).orElseThrow(null);
+
+        log.info("감소 로직(현재 인원 / 최대인원): {} / {}",
+                chatRoom.getPersonnel(),
+                chatRoom.getMaxPersonnel());
+
+        chatRoom.decreasePersonnel();
 
         return new GraphqlDTO(
                 chatRoom.getId().toString(),

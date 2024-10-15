@@ -28,4 +28,9 @@ public class ChatGraphqlController {
     public GraphqlDTO incrementPersonnel(@Argument String id) throws HttpResponseException {
         return chatGraphqlService.incrementPersonnel(id);
     }
+
+    @MutationMapping
+    public GraphqlDTO decrementPersonnel(@Argument String id) {
+        return chatGraphqlService.decrementPersonnel(id);
+    }
 }

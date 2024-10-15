@@ -13,4 +13,5 @@ type Query {
 
 type Mutation {
     incrementPersonnel(id: ID!): ChatRoom
+    decrementPersonnel(id: ID!): ChatRoom
 }

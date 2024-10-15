@@ -8,4 +8,6 @@ public interface ChatGraphqlService {
     GraphqlDTO getChatRoomById(String id);
 
     GraphqlDTO incrementPersonnel(String id) throws HttpResponseException;
+
+    GraphqlDTO decrementPersonnel(String id);
 }
