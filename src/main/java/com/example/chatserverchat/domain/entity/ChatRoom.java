@@ -28,6 +28,9 @@ public class ChatRoom {
     @Column(name = "open_username")
     private String openUsername;
 
+    @Column(name = "personnel")
+    private Integer personnel;
+
     @Column(name = "max_personnel")
     private Integer maxPersonnel;
 
@@ -39,6 +42,7 @@ public class ChatRoom {
     public ChatRoom(ChatRoomDTO dto, String openUsername) {
         this.title = dto.getTitle();
         this.openUsername = openUsername;
+        this.personnel = 0;
         this.maxPersonnel = dto.getMaxPersonnel();
     }
 }
