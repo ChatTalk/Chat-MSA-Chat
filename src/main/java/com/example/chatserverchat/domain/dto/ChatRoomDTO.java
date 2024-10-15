@@ -19,6 +19,7 @@ public class ChatRoomDTO {
         private String chatId;
         private String title;
         private String openUsername;
+        private Integer personnel;
         private Integer maxPersonnel;
     }
 }

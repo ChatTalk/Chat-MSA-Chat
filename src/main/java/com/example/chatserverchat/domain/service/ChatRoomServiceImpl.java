@@ -19,7 +19,6 @@ import java.util.List;
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatReadRepository chatReadRepository;
     private final GraphqlService graphqlService;
 
     @Override

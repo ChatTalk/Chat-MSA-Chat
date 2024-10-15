@@ -2,6 +2,7 @@ type ChatRoom {
     id: ID!
     title: String!
     openUsername: String!
+    personnel: Int!
     maxPersonnel: Int!
     createdAt: String!
 }
