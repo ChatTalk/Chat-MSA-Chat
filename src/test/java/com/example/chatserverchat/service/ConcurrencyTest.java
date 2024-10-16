@@ -64,7 +64,7 @@ public class ConcurrencyTest {
     }
 
     @Test
-    @DisplayName("트래픽이 몰리는 상황에서 정합성이 지켜지는지 여부")
+    @DisplayName("트래픽이 몰리는 상황에서 정합성이 지켜지는지 테스트")
     void testWithNoLock() throws InterruptedException {
         // given & when
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(1L);
@@ -102,5 +102,11 @@ public class ConcurrencyTest {
                 .describedAs("예상 인원 수: %d, 실제 인원 수: %d", MAX_PERSONNEL, result.size())
                 .isGreaterThan(MAX_PERSONNEL);
 //                .isEqualTo(MAX_PERSONNEL);
+    }
+
+    @Test
+    @DisplayName("redisson 기반 분산 락 구현을 통한 정합성이 지켜지는지 테스트")
+    void testWithLock() throws InterruptedException {
+
     }
 }

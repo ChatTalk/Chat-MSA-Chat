@@ -8,7 +8,5 @@ public interface ChatGraphqlService {
 
     GraphqlDTO incrementPersonnel(String id);
 
-    GraphqlDTO incrementPersonnelWithLock(String id);
-
     GraphqlDTO decrementPersonnel(String id);
 }
