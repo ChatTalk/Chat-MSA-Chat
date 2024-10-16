@@ -29,18 +29,26 @@ dependencies {
     implementation 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    testImplementation 'org.springframework.graphql:spring-graphql-test'
+    testImplementation 'io.projectreactor:reactor-test'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
+    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // WebSocket Security
     implementation 'org.springframework.security:spring-security-messaging:6.3.1'
 
     // redisson
-//    implementation 'org.redisson:redisson-spring-boot-starter:3.28.0'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.28.0'
 }
 
 dependencyManagement {

@@ -1,7 +1,9 @@
 package com.example.chatserverchat.domain.controller;
 
 import com.example.chatserverchat.domain.dto.ChatRoomDTO;
+import com.example.chatserverchat.domain.service.ChatParticipantService;
 import com.example.chatserverchat.domain.service.ChatRoomService;
+import com.example.chatserverchat.global.user.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,12 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final ChatParticipantService chatParticipantService;
 
     @PostMapping("/create")
     public ResponseEntity<ChatRoomDTO.Info> createOpenChat(@RequestBody ChatRoomDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
         ChatRoomDTO.Info chatInfo = chatRoomService.createOpenChat(dto, userDetails.getUsername());
+        chatParticipantService.createChatParticipant(chatInfo.getChatId());
         return ResponseEntity.ok(chatInfo);
     }
 
@@ -32,8 +36,13 @@ public class ChatRoomController {
     }
 
     @GetMapping("/subscribe")
-    public ResponseEntity<List<ChatRoomDTO.Info>> subscribe(@AuthenticationPrincipal UserDetails userDetails) {
-        List<ChatRoomDTO.Info> subscribedChats = chatRoomService.getSubscribedChatRooms(userDetails.getUsername());
+    public ResponseEntity<List<ChatRoomDTO.Info>> subscribe(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<ChatRoomDTO.Info> subscribedChats =
+                chatRoomService.
+                        getSubscribedChatRooms(
+                                userDetails.getUserInfoDTO().getEmail(),
+                                userDetails.getUserInfoDTO().getRole());
+
         return ResponseEntity.ok(subscribedChats);
     }
 }

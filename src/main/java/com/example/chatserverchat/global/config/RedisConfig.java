@@ -1,5 +1,6 @@
 package com.example.chatserverchat.global.config;
 
+import com.example.chatserverchat.domain.dto.ChatUserReadDTO;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,20 +46,20 @@ public class RedisConfig {
 
         return new LettuceConnectionFactory(redisConfiguration, lettuceClientConfiguration);
     }
-
-    @Bean(name = "maxPersonnelTemplate")
-    public RedisTemplate<String, Integer> maxPersonnelTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Integer.class));
-
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Integer.class));
-
-        return redisTemplate;
-    }
+//
+//    @Bean(name = "maxPersonnelTemplate")
+//    public RedisTemplate<String, Integer> maxPersonnelTemplate(RedisConnectionFactory redisConnectionFactory) {
+//        RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
+//        redisTemplate.setConnectionFactory(redisConnectionFactory);
+//
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Integer.class));
+//
+//        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Integer.class));
+//
+//        return redisTemplate;
+//    }
 
     // 회원이 지급 '읽고'있는 채팅방 확인용
     @Bean(name = "readTemplate")
@@ -66,22 +67,20 @@ public class RedisConfig {
         return getStringStringRedisTemplate(redisConnectionFactory);
     }
 
-//    // 회원이 지금 구독하고 있는 채팅방 확인용(set 구조화)
-//    @Bean(name = "subscribeTemplate")
-//    public RedisTemplate<String, String> subscribeTemplate(RedisConnectionFactory redisConnectionFactory) {
-//        return getStringStringRedisTemplate(redisConnectionFactory);
+//    /**
+//     * 삭제 예정입니다
+//     * @param redisConnectionFactory
+//     * @return
+//     */
+//    @Bean(name = "participatedTemplate")
+//    public RedisTemplate<String, Boolean> participatedTemplate(RedisConnectionFactory redisConnectionFactory) {
+//        return getStringBooleanTemplate(redisConnectionFactory);
 //    }
-
-    // 채팅창의 접속자 인원 관리
-    @Bean(name = "participatedTemplate")
-    public RedisTemplate<String, Boolean> participatedTemplate(RedisConnectionFactory redisConnectionFactory) {
-        return getStringBooleanTemplate(redisConnectionFactory);
-    }
 
     // 접속자 현황 펍 섭 실시간 업데이트용
     @Bean(name = "pubSubTemplate")
-    public RedisTemplate<String, String> pubSubTemplate(RedisConnectionFactory redisConnectionFactory) {
-        return getStringStringRedisTemplate(redisConnectionFactory);
+    public RedisTemplate<String, ChatUserReadDTO> pubSubTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return getStringChatUserReadDTOTemplate(redisConnectionFactory);
     }
 
     private RedisTemplate<String, String> getStringStringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -112,6 +111,23 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+    private RedisTemplate<String, ChatUserReadDTO> getStringChatUserReadDTOTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, ChatUserReadDTO> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+        // 키와 해시 키는 String으로 설정
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+
+        // 해시 값은 Boolean으로 설정
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ChatUserReadDTO.class));
+        // 값을 Boolean으로 설정
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatUserReadDTO.class));
+
+        return redisTemplate;
+    }
+
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {

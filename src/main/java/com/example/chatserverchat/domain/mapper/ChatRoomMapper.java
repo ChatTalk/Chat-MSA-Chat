@@ -11,6 +11,11 @@ public class ChatRoomMapper {
     }
 
     public static ChatRoomDTO.Info toDTO(ChatRoom chat, String username) {
-        return new ChatRoomDTO.Info(chat.getId().toString(), chat.getTitle(), username, chat.getMaxPersonnel());
+        return new ChatRoomDTO.Info(
+                chat.getId().toString(),
+                chat.getTitle(),
+                username,
+                chat.getPersonnel(),
+                chat.getMaxPersonnel());
     }
 }

@@ -1,0 +1,17 @@
+type ChatRoom {
+    id: ID!
+    title: String!
+    openUsername: String!
+    personnel: Int!
+    maxPersonnel: Int!
+    createdAt: String!
+}
+
+type Query {
+    getChatRoomById(id: ID!): ChatRoom
+}
+
+type Mutation {
+    incrementPersonnel(id: ID!): ChatRoom
+    decrementPersonnel(id: ID!): ChatRoom
+}
