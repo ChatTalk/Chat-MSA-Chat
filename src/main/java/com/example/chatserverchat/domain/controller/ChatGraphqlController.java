@@ -1,6 +1,7 @@
 package com.example.chatserverchat.domain.controller;
 
 import com.example.chatserverchat.domain.dto.GraphqlDTO;
+import com.example.chatserverchat.domain.facade.DistributedLockFacade;
 import com.example.chatserverchat.domain.service.ChatGraphqlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ChatGraphqlController {
 
     private final ChatGraphqlService chatGraphqlService;
+    private final DistributedLockFacade distributedLockFacade;
 
     @QueryMapping
     public GraphqlDTO getChatRoomById(@Argument String id) {
@@ -25,8 +27,8 @@ public class ChatGraphqlController {
     }
 
     @MutationMapping
-    public GraphqlDTO incrementPersonnel(@Argument String id) throws HttpResponseException {
-        return chatGraphqlService.incrementPersonnel(id);
+    public GraphqlDTO incrementPersonnel(@Argument String id) {
+        return distributedLockFacade.incrementPersonnel(id);
     }
 
     @MutationMapping
