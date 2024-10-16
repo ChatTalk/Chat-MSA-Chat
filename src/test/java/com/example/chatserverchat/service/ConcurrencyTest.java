@@ -9,16 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -81,7 +76,7 @@ public class ConcurrencyTest {
         CountDownLatch countDownLatch = new CountDownLatch(CLIENT);
 
         // 성공 결과를 담을 자료구조
-        Set<GraphqlDTO> result = ConcurrentHashMap.newKeySet();
+        List<GraphqlDTO> result = new ArrayList<>();
 
         for (int i = 0; i < CLIENT; i++) {
             executorService.submit(() -> {
@@ -106,5 +101,6 @@ public class ConcurrencyTest {
         assertThat(result.size())
                 .describedAs("예상 인원 수: %d, 실제 인원 수: %d", MAX_PERSONNEL, result.size())
                 .isGreaterThan(MAX_PERSONNEL);
+//                .isEqualTo(MAX_PERSONNEL);
     }
 }
