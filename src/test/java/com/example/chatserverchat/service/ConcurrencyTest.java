@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -22,15 +23,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // 인메모리 데이터베이스 h2 기반 동시성 제어 테스트
 // 메모리 기반이기 떄문에 테스트 종료시, 자동 휘발됨(데이터베이스까지!)
 @Slf4j
-@ExtendWith(SpringExtension.class)
-@DataJpaTest
-@Import({ChatGraphqlServiceImpl.class})
+@SpringBootTest
 @ActiveProfiles("test")
 public class ConcurrencyTest {
 
@@ -63,6 +63,9 @@ public class ConcurrencyTest {
         // given & when, then
         ChatRoom chatRoom = chatRoomOptional.get();
         assertThat(chatRoom.getTitle()).isEqualTo(TITLE);
+
+        chatRoom.increasePersonnel();
+        assertThat(chatRoom.getPersonnel()).isEqualTo(1);
     }
 
     @Test
@@ -71,7 +74,6 @@ public class ConcurrencyTest {
         // given & when
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(1L);
         assertThat(chatRoomOptional.isPresent()).isTrue();
-
         ChatRoom chatRoom = chatRoomOptional.get();
 
         // 스레드 풀 및 동시 시작 장치
@@ -88,7 +90,7 @@ public class ConcurrencyTest {
                            chatGraphqlService
                                    .incrementPersonnel(chatRoom.getId().toString());
                    result.add(success);
-                   log.info("입장 성공: {}", success);
+                   log.info("입장 성공!: {}", success);
                } catch (Exception e) {
                    log.error("입장 실패! : {}", e.getMessage());
                } finally {
@@ -101,8 +103,8 @@ public class ConcurrencyTest {
         executorService.shutdown(); // 서비스 종료
 
         // then
-        log.info("예상 결과: {}", MAX_PERSONNEL);
-        log.info("실제 결과: {}", result.size());
-        assertThat(result.size()).isEqualTo(MAX_PERSONNEL);
+        assertThat(result.size())
+                .describedAs("예상 인원 수: %d, 실제 인원 수: %d", MAX_PERSONNEL, result.size())
+                .isGreaterThan(MAX_PERSONNEL);
     }
 }

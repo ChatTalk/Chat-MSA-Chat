@@ -3,12 +3,17 @@ package com.example.chatserverchat.domain.service;
 import com.example.chatserverchat.domain.dto.GraphqlDTO;
 import com.example.chatserverchat.domain.entity.ChatRoom;
 import com.example.chatserverchat.domain.repository.ChatRoomRepository;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 
 @Slf4j
 @Service
@@ -37,10 +42,11 @@ public class ChatGraphqlServiceImpl implements ChatGraphqlService {
     }
 
     @Override
-    public GraphqlDTO incrementPersonnel(String id) throws HttpResponseException {
+    public GraphqlDTO incrementPersonnel(String id) {
         ChatRoom chatRoom =
-                chatRoomRepository.findById(Long.parseLong(id)).orElseThrow(null);
-
+                chatRoomRepository.findById(Long.parseLong(id)).orElseThrow(
+                        () -> new IllegalArgumentException("해당하는 채팅방이 조회되지 않음")
+                );
         log.info("그래프큐엘 찾았냐(현재 인원 / 최대인원): {} / {}",
                 chatRoom.getPersonnel(),
                 chatRoom.getMaxPersonnel());
@@ -49,7 +55,8 @@ public class ChatGraphqlServiceImpl implements ChatGraphqlService {
          * 락 구현은 이 로직 내에서 이뤄져야 할듯? 분산락 써보자
          */
         if (chatRoom.getMaxPersonnel() <= chatRoom.getPersonnel()) {
-            throw new HttpResponseException(HttpStatus.SC_FORBIDDEN, "이미 정원이 초과된 채팅방");
+            throw new ResponseStatusException(
+                    HttpStatusCode.valueOf(SC_FORBIDDEN), "이미 정원이 초과된 채팅방");
         }
 
         chatRoom.increasePersonnel();
