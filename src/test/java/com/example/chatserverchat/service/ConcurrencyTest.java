@@ -3,9 +3,11 @@ package com.example.chatserverchat.service;
 import com.example.chatserverchat.domain.dto.ChatRoomDTO;
 import com.example.chatserverchat.domain.dto.GraphqlDTO;
 import com.example.chatserverchat.domain.entity.ChatRoom;
+import com.example.chatserverchat.domain.facade.DistributedLockFacade;
 import com.example.chatserverchat.domain.repository.ChatRoomRepository;
 import com.example.chatserverchat.domain.service.ChatGraphqlServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,9 @@ public class ConcurrencyTest {
     @Autowired
     private ChatGraphqlServiceImpl chatGraphqlService;
 
+    @Autowired
+    private DistributedLockFacade distributedLockFacade;
+
     private static final String TITLE = "title";
     private static final Integer MAX_PERSONNEL = 5;
     private static final Integer CLIENT = 1_000;
@@ -45,6 +50,16 @@ public class ConcurrencyTest {
         ChatRoomDTO dto = new ChatRoomDTO(TITLE, MAX_PERSONNEL);
         ChatRoom chatRoom = new ChatRoom(dto, "openUser");
 
+        chatRoomRepository.save(chatRoom);
+    }
+
+    @AfterEach
+    @DisplayName("테스트 객체 카운팅 필드 초기화")
+    void tearDown() {
+        ChatRoom chatRoom = chatRoomRepository.findById(1L).orElseThrow(
+                () -> new IllegalArgumentException("조회 객체 없음"));
+
+        chatRoom.setPersonnel(0);
         chatRoomRepository.save(chatRoom);
     }
 
@@ -101,12 +116,45 @@ public class ConcurrencyTest {
         assertThat(result.size())
                 .describedAs("예상 인원 수: %d, 실제 인원 수: %d", MAX_PERSONNEL, result.size())
                 .isGreaterThan(MAX_PERSONNEL);
-//                .isEqualTo(MAX_PERSONNEL);
     }
 
     @Test
     @DisplayName("redisson 기반 분산 락 구현을 통한 정합성이 지켜지는지 테스트")
     void testWithLock() throws InterruptedException {
+        // given & when
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(1L);
+        assertThat(chatRoomOptional.isPresent()).isTrue();
+        ChatRoom chatRoom = chatRoomOptional.get();
 
+        // 스레드 풀 및 동시 시작 장치
+        ExecutorService executorService = Executors.newFixedThreadPool(CLIENT);
+        CountDownLatch countDownLatch = new CountDownLatch(CLIENT);
+
+        // 성공 결과를 담을 자료구조
+        List<GraphqlDTO> result = new ArrayList<>();
+
+        for (int i = 0; i < CLIENT; i++) {
+            executorService.submit(() -> {
+                try {
+                    GraphqlDTO success =
+                            distributedLockFacade
+                                    .incrementPersonnel(chatRoom.getId().toString());
+                    result.add(success);
+                    log.info("입장 성공!: {}", success);
+                } catch (Exception e) {
+                    log.error("입장 실패! : {}", e.getMessage());
+                } finally {
+                    countDownLatch.countDown(); // 카운트 감소
+                }
+            });
+        }
+
+        countDownLatch.await(); // 스레드 종료 대기
+        executorService.shutdown(); // 서비스 종료
+
+        // then
+        assertThat(result.size())
+                .describedAs("예상 인원 수: %d, 실제 인원 수: %d", MAX_PERSONNEL, result.size())
+                .isEqualTo(MAX_PERSONNEL);
     }
 }
