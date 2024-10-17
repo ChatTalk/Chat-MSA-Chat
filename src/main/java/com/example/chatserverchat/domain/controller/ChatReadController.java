@@ -3,6 +3,7 @@ package com.example.chatserverchat.domain.controller;
 import com.example.chatserverchat.domain.dto.ChatMessageDTO;
 import com.example.chatserverchat.domain.service.ChatParticipantService;
 import com.example.chatserverchat.domain.service.ChatReadService;
+import com.example.chatserverchat.global.user.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,10 @@ public class ChatReadController {
 
     @GetMapping("/read/{chatId}")
     public ResponseEntity<List<ChatMessageDTO>> getChatMessages(
-            @PathVariable Long chatId, @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Long chatId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         log.info("안 읽은 메세지 갖고 오기");
         List<ChatMessageDTO> unreadMessages =
-                chatReadService.getUnreadMessages(userDetails.getUsername(), chatId.toString());
+                chatReadService.getUnreadMessages(userDetails.getUsername(), chatId.toString(), userDetails.getUserInfoDTO().getRole());
 
         return ResponseEntity.ok(unreadMessages);
     }
@@ -35,7 +36,7 @@ public class ChatReadController {
     // 메뉴 돌아가기 버트 눌렀을 때
     @PutMapping("/read/{chatId}")
     public void unParticipate(
-            @PathVariable Long chatId, @AuthenticationPrincipal UserDetails userDetails) throws JsonProcessingException {
+            @PathVariable Long chatId, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("돌아가기 누름");
         chatParticipantService.exitChatParticipant(chatId.toString(), userDetails.getUsername());
     }

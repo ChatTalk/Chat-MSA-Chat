@@ -3,45 +3,37 @@ package com.example.chatserverchat.domain.service;
 import com.example.chatserverchat.domain.document.UserSubscription;
 import com.example.chatserverchat.domain.dto.ChatMessageDTO;
 import com.example.chatserverchat.domain.repository.ChatReadRepository;
+import com.example.chatserverchat.domain.utility.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatReadServiceImpl implements ChatReadService {
 
-    private final ChatReadRepository chatReadRepository;
+    private final GraphqlClientService graphqlClientService;
 
     // 유저가 구독한 채팅방의 읽지 않은 메시지 가져오기
     @Override
     @Transactional(readOnly = true)
-    public List<ChatMessageDTO> getUnreadMessages(String username, String chatId) {
-        Optional<UserSubscription> userOptional =  chatReadRepository.findByUsername(username);
+    public List<ChatMessageDTO> getUnreadMessages(String username, String chatId, String role) {
 
-        return userOptional
-                .map(userSubscription -> userSubscription.getSubscribedChats().stream()
-                        .filter(sub -> sub.getChatId().equals(chatId))
-                        .findFirst()
-                        .map(chatSubscription -> {
-                            // 읽지 않은 메시지 리스트를 반환
-                            List<ChatMessageDTO> messages
-                                    = new ArrayList<>(chatSubscription.getUnreadMessages());
+        // 1. 해당 채팅방 id, 사용자 이메일을 전달해서 **참여자 인스턴스**에서 접속 종료 시간 갖고오기
+        String exit = graphqlClientService.getExitTime(chatId, username, role);
+        LocalDateTime exitTime = DateTimeUtil.toLocalDateTime(exit);
 
-                            // 읽지 않은 메시지 리스트를 빈 배열로 초기화
-                            chatSubscription.setUnreadMessages(Collections.emptyList());
+        // 2. 해당 채팅방 id를 기반으로 **메세지 인스턴스**에서 접속 종료 시간부터 현재 시간까지의 메세지 리스트 들고와서 반환
+        List<ChatMessageDTO> messages =
+                graphqlClientService.getChatMessages(chatId, exitTime, username, role);
 
-                            // 변경사항을 저장소에 반영 (MongoDB에 반영)
-                            chatReadRepository.save(userSubscription);
+        log.info("안 읽은 메세지: {}", messages.stream().map(ChatMessageDTO::getMessage).toList());
 
-                            return messages;
-                        })
-                        .orElse(Collections.emptyList()))
-                .orElse(Collections.emptyList());
+        return messages;
     }
 }
