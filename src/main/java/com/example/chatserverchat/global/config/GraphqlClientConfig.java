@@ -11,12 +11,25 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class GraphqlClientConfig {
 
     @Value("${graphql.url.message}")
-    private String CHAT_GRAPHQL_URL;
+    private String CHAT_MESSAGE_URL;
 
-    @Bean
-    public HttpGraphQlClient graphQlClient() {
+    @Value("${graphql.url.participant}")
+    private String CHAT_PARTICIPANT_URL;
+
+    @Bean(name = "messageGraphQlClient")
+    public HttpGraphQlClient messageGraphQlClient() {
         WebClient webClient = WebClient.builder()
-                .baseUrl(CHAT_GRAPHQL_URL)
+                .baseUrl(CHAT_MESSAGE_URL)
+                .build();
+
+        return HttpGraphQlClient.builder(webClient)
+                .build();
+    }
+
+    @Bean(name = "participantGraphQlClient")
+    public HttpGraphQlClient participantGraphQlClient() {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(CHAT_PARTICIPANT_URL)
                 .build();
 
         return HttpGraphQlClient.builder(webClient)

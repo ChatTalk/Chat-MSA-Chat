@@ -15,6 +15,7 @@ public class GraphqlClientService {
 
     private final WebGraphQlClient webGraphQlClient;
 
+    // 채팅 인스턴스(grpahql 클라)에서 메세지 인스턴스(graphql 서버)에서 특정 유저의 구독 리스트 조회
     public List<ChatUserSubscriptionDTO> getChatRoomById(String email, String role) {
         String query = """
                 query SubscriptionsByEmail($email: String!) {
@@ -42,5 +43,11 @@ public class GraphqlClientService {
 
         return response;
     }
+
+    // 채팅 인스턴스(grpahql 클라)에서 메세지 인스턴스(graphql 서버)에서
+    // 특정 유저의 특정 채팅방 읽지 않은 메세지 조회
+
+    // 채팅 인스턴스(graphql 클라)에서 참여자 인스턴스(graphql 서버)에서
+    // 특정 유저의 특정 채팅방 마지막 퇴장 시간 확인
 
 }
